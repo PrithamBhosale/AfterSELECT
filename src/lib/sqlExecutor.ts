@@ -129,7 +129,7 @@ function validateQueryForLearners(query: string): { isValid: boolean; error?: st
   // Check for patterns that look like forgotten commas
   // Pattern: identifier followed by whitespace then another identifier (not AS, or SQL keywords)
   const lines = cleanedClause.split(/\n/);
-  const sqlKeywords = ['as', 'from', 'where', 'and', 'or', 'not', 'in', 'is', 'null', 'like', 'between', 'case', 'when', 'then', 'else', 'end', 'distinct', 'all', 'top'];
+  const sqlKeywords = ['as', 'from', 'where', 'and', 'or', 'not', 'in', 'is', 'null', 'like', 'between', 'case', 'when', 'then', 'else', 'end', 'distinct', 'all', 'limit', 'offset'];
 
   for (let i = 0; i < lines.length - 1; i++) {
     const currentLine = lines[i].trim();

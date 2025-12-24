@@ -88,15 +88,15 @@ export const sqlCurriculum: SQLModule[] = [
         ]
       },
       {
-        id: 'select-distinct-top',
-        title: 'DISTINCT & TOP',
+        id: 'select-distinct-limit',
+        title: 'DISTINCT & LIMIT',
         description: 'Unique values and limiting results',
         queries: [
           { id: 'sel-16', title: 'DISTINCT Values', description: 'From the **customers** table, get a list of unique country names (no duplicates) using DISTINCT', query: `SELECT DISTINCT country\nFROM customers`, difficulty: 'beginner' },
-          { id: 'sel-17', title: 'TOP N Rows', description: 'From the **customers** table, retrieve only the first 3 rows using TOP 3', query: `SELECT TOP 3 *\nFROM customers`, difficulty: 'beginner' },
-          { id: 'sel-18', title: 'Top with ORDER BY', description: 'From the **customers** table, get the 3 customers with the highest scores using TOP 3 and ORDER BY', query: `SELECT TOP 3 *\nFROM customers\nORDER BY score DESC`, difficulty: 'beginner' },
-          { id: 'sel-19', title: 'Bottom N Analysis', description: 'From the **customers** table, find the 2 customers with the lowest scores using TOP 2 and ORDER BY ASC', query: `SELECT TOP 2 *\nFROM customers\nORDER BY score ASC`, difficulty: 'beginner' },
-          { id: 'sel-20', title: 'Recent Orders', description: 'From the **orders** table, get the 2 most recent orders by sorting by order_date in descending order', query: `SELECT TOP 2 *\nFROM orders\nORDER BY order_date DESC`, difficulty: 'beginner' },
+          { id: 'sel-17', title: 'LIMIT N Rows', description: 'From the **customers** table, retrieve only the first 3 rows using LIMIT 3', query: `SELECT *\nFROM customers\nLIMIT 3`, difficulty: 'beginner' },
+          { id: 'sel-18', title: 'LIMIT with ORDER BY', description: 'From the **customers** table, get the 3 customers with the highest scores using ORDER BY and LIMIT 3', query: `SELECT *\nFROM customers\nORDER BY score DESC\nLIMIT 3`, difficulty: 'beginner' },
+          { id: 'sel-19', title: 'Bottom N Analysis', description: 'From the **customers** table, find the 2 customers with the lowest scores using ORDER BY ASC and LIMIT 2', query: `SELECT *\nFROM customers\nORDER BY score ASC\nLIMIT 2`, difficulty: 'beginner' },
+          { id: 'sel-20', title: 'Recent Orders', description: 'From the **orders** table, get the 2 most recent orders by sorting by order_date in descending order and using LIMIT 2', query: `SELECT *\nFROM orders\nORDER BY order_date DESC\nLIMIT 2`, difficulty: 'beginner' },
         ]
       },
       {
