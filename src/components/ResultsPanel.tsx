@@ -49,7 +49,8 @@ const ResultsPanel = ({ results, message, isError }: ResultsPanelProps) => {
     );
   }
 
-  if (message) {
+  // Show message-only view for errors OR when there's a message but no results
+  if (message && (isError || !results || results.length === 0)) {
     return (
       <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {/* Header */}
