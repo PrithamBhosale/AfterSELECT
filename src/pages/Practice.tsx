@@ -615,7 +615,7 @@ const Practice = () => {
           </div>
 
           {/* Bottom Action Bar */}
-          {!isError && results && currentIndex < allQueries.length - 1 && (
+          {!isError && (results !== null || message) && currentIndex < allQueries.length - 1 && (
             <div className="border-t border-slate-200 bg-white px-4 lg:px-6 py-4 flex-shrink-0">
               <button
                 onClick={goNext}
