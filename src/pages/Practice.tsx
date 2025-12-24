@@ -193,6 +193,7 @@ const Practice = () => {
 
   const [currentIndex, setCurrentIndex] = useState(getStartingIndex);
   const [results, setResults] = useState<Record<string, any>[] | null>(null);
+  const [resultSets, setResultSets] = useState<{ columns: string[]; rows: Record<string, any>[] }[] | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -205,6 +206,7 @@ const Practice = () => {
       if (!isNaN(idx) && idx >= 0 && idx < allQueries.length && idx !== currentIndex) {
         setCurrentIndex(idx);
         setResults(null);
+        setResultSets(null);
         setMessage(null);
         setIsError(false);
       }
@@ -219,11 +221,13 @@ const Practice = () => {
     setMessage('Executing query...');
     setIsError(false);
     setResults(null);
+    setResultSets(null);
 
     try {
       // Execute the user's query
       const userResult = await executeQueryAsync(query);
       setResults(userResult.data);
+      setResultSets(userResult.resultSets);
 
       // If user query has an error, show it
       if (userResult.isError) {
@@ -354,6 +358,7 @@ const Practice = () => {
     if (index >= 0 && index < allQueries.length) {
       setCurrentIndex(index);
       setResults(null);
+      setResultSets(null);
       setMessage(null);
       setIsError(false);
     }
@@ -605,7 +610,7 @@ const Practice = () => {
 
             {/* Results Panel */}
             <div className="flex-1 min-h-[150px] overflow-hidden">
-              <ResultsPanel results={results} message={message} isError={isError} />
+              <ResultsPanel results={results} resultSets={resultSets} message={message} isError={isError} />
             </div>
           </div>
 

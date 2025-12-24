@@ -1,7 +1,13 @@
 import initSqlJs, { Database } from 'sql.js';
 
+type SingleResultSet = {
+  columns: string[];
+  rows: Record<string, any>[];
+};
+
 type QueryResult = {
   data: Record<string, any>[] | null;
+  resultSets: SingleResultSet[] | null;  // For multiple result sets
   message: string | null;
   isError: boolean;
 };
@@ -196,6 +202,7 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
     if (!db) {
       return {
         data: null,
+        resultSets: null,
         message: 'Database not initialized. Please try again.',
         isError: true,
       };
@@ -206,6 +213,7 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
     if (!trimmedQuery) {
       return {
         data: null,
+        resultSets: null,
         message: 'Please enter a SQL query.',
         isError: true,
       };
@@ -216,6 +224,7 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
     if (!validation.isValid) {
       return {
         data: null,
+        resultSets: null,
         message: validation.error || 'Invalid query syntax.',
         isError: true,
       };
@@ -230,68 +239,80 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
       if (upperQuery.startsWith('SELECT')) {
         return {
           data: [],
+          resultSets: [],
           message: 'Query executed successfully. No rows returned.',
           isError: false,
         };
       } else if (upperQuery.startsWith('INSERT')) {
         return {
           data: null,
+          resultSets: null,
           message: 'INSERT executed successfully. Row(s) added.',
           isError: false,
         };
       } else if (upperQuery.startsWith('UPDATE')) {
         return {
           data: null,
+          resultSets: null,
           message: 'UPDATE executed successfully. Row(s) modified.',
           isError: false,
         };
       } else if (upperQuery.startsWith('DELETE')) {
         return {
           data: null,
+          resultSets: null,
           message: 'DELETE executed successfully. Row(s) removed.',
           isError: false,
         };
       } else if (upperQuery.startsWith('CREATE')) {
         return {
           data: null,
+          resultSets: null,
           message: 'CREATE executed successfully.',
           isError: false,
         };
       } else if (upperQuery.startsWith('DROP')) {
         return {
           data: null,
+          resultSets: null,
           message: 'DROP executed successfully.',
           isError: false,
         };
       } else if (upperQuery.startsWith('ALTER')) {
         return {
           data: null,
+          resultSets: null,
           message: 'ALTER executed successfully.',
           isError: false,
         };
       }
       return {
         data: null,
+        resultSets: null,
         message: 'Query executed successfully.',
         isError: false,
       };
     }
 
-    // Convert results to array of objects
-    const result = results[0];
-    const columns = result.columns;
-    const values = result.values;
-
-    const data = values.map(row => {
-      const obj: Record<string, any> = {};
-      columns.forEach((col, i) => {
-        obj[col] = row[i];
+    // Convert ALL results to arrays of objects (supports multiple result sets)
+    const allResultSets: SingleResultSet[] = results.map(result => {
+      const columns = result.columns;
+      const rows = result.values.map(row => {
+        const obj: Record<string, any> = {};
+        columns.forEach((col, i) => {
+          obj[col] = row[i];
+        });
+        return obj;
       });
-      return obj;
+      return { columns, rows };
     });
+
+    // For backwards compatibility, data contains the first result set's rows
+    const data = allResultSets.length > 0 ? allResultSets[0].rows : [];
 
     return {
       data,
+      resultSets: allResultSets,
       message: null,
       isError: false,
     };
@@ -323,6 +344,7 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
 
     return {
       data: null,
+      resultSets: null,
       message: friendlyMessage,
       isError: true,
     };
@@ -335,6 +357,7 @@ export function executeQuery(query: string): QueryResult {
   // We return a loading indicator that will be replaced by the async result
   return {
     data: null,
+    resultSets: null,
     message: 'Executing query...',
     isError: false,
   };

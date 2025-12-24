@@ -1,13 +1,19 @@
 import { Table, AlertCircle, CheckCircle2, Terminal, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+interface SingleResultSet {
+  columns: string[];
+  rows: Record<string, any>[];
+}
+
 interface ResultsPanelProps {
   results: Record<string, any>[] | null;
+  resultSets?: SingleResultSet[] | null;
   message: string | null;
   isError: boolean;
 }
 
-const ResultsPanel = ({ results, message, isError }: ResultsPanelProps) => {
+const ResultsPanel = ({ results, resultSets, message, isError }: ResultsPanelProps) => {
   // Show loading state
   if (message === 'Executing query...') {
     return (
@@ -28,7 +34,7 @@ const ResultsPanel = ({ results, message, isError }: ResultsPanelProps) => {
     );
   }
 
-  if (!results && !message) {
+  if (!results && !message && (!resultSets || resultSets.length === 0)) {
     return (
       <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {/* Header */}
@@ -50,7 +56,7 @@ const ResultsPanel = ({ results, message, isError }: ResultsPanelProps) => {
   }
 
   // Show message-only view for errors OR when there's a message but no results
-  if (message && (isError || !results || results.length === 0)) {
+  if (message && (isError || (!results || results.length === 0) && (!resultSets || resultSets.length === 0))) {
     return (
       <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         {/* Header */}
@@ -104,6 +110,91 @@ const ResultsPanel = ({ results, message, isError }: ResultsPanelProps) => {
     );
   }
 
+  // Check if we have multiple result sets
+  const hasMultipleResultSets = resultSets && resultSets.length > 1;
+
+  // If we have multiple result sets, render them all
+  if (hasMultipleResultSets) {
+    const totalRows = resultSets.reduce((sum, rs) => sum + rs.rows.length, 0);
+
+    return (
+      <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2.5 bg-green-50 border-b border-green-200">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-green-500" />
+            <span className="text-xs font-medium text-green-700">Query executed successfully</span>
+          </div>
+          <span className="text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full font-medium">
+            {resultSets.length} result set{resultSets.length !== 1 ? 's' : ''} • {totalRows} row{totalRows !== 1 ? 's' : ''}
+          </span>
+        </div>
+
+        {/* Results Tables */}
+        <div className="flex-1 overflow-auto">
+          {resultSets.map((resultSet, setIndex) => (
+            <div key={setIndex} className={cn(setIndex > 0 && "border-t-4 border-slate-200")}>
+              {/* Result Set Header */}
+              <div className="bg-slate-100 px-4 py-2 border-b border-slate-200 sticky top-0 z-10">
+                <span className="text-xs font-semibold text-slate-600">
+                  Result Set {setIndex + 1}
+                </span>
+                <span className="text-xs text-slate-400 ml-2">
+                  ({resultSet.rows.length} row{resultSet.rows.length !== 1 ? 's' : ''})
+                </span>
+              </div>
+
+              {resultSet.rows.length > 0 ? (
+                <table className="w-full text-sm">
+                  <thead className="sticky top-8 z-10">
+                    <tr className="bg-slate-50 border-b border-slate-200">
+                      {resultSet.columns.map((col) => (
+                        <th
+                          key={col}
+                          className="px-4 py-2.5 text-left text-xs font-semibold text-slate-600 whitespace-nowrap"
+                        >
+                          {col}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {resultSet.rows.map((row, i) => (
+                      <tr
+                        key={i}
+                        className="hover:bg-slate-50 transition-colors"
+                      >
+                        {resultSet.columns.map((col) => (
+                          <td
+                            key={col}
+                            className="px-4 py-2 text-xs font-mono whitespace-nowrap"
+                          >
+                            {row[col] === null ? (
+                              <span className="text-slate-400 italic">NULL</span>
+                            ) : typeof row[col] === 'number' ? (
+                              <span className="text-blue-600">{String(row[col])}</span>
+                            ) : (
+                              <span className="text-slate-700">{String(row[col])}</span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="p-4 text-center text-slate-400 text-sm">
+                  No rows returned
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Single result set (backwards compatible)
   if (results && results.length > 0) {
     const columns = Object.keys(results[0]);
 
