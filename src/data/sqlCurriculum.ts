@@ -10,6 +10,8 @@ export interface SQLQuery {
   conceptsCovered?: string[];
   /** Expected columns that must be returned by the query (case-insensitive). If set, validation will check that the result contains EXACTLY these columns. */
   expectedColumns?: string[];
+  /** SQL to run before the user's query to set up the environment (e.g. creating tables) */
+  setupSql?: string;
 }
 
 export interface SQLLesson {
@@ -134,8 +136,22 @@ export const sqlCurriculum: SQLModule[] = [
         title: 'ALTER TABLE',
         description: 'Modify existing tables',
         queries: [
-          { id: 'ddl-2', title: 'Add Column', description: 'Using ALTER TABLE on **persons**, add a new column "email" with type VARCHAR(50) NOT NULL', query: `ALTER TABLE persons\nADD email VARCHAR(50) NOT NULL`, difficulty: 'intermediate' },
-          { id: 'ddl-3', title: 'Drop Column', description: 'Using ALTER TABLE on **persons**, remove the "phone" column from the table', query: `ALTER TABLE persons\nDROP COLUMN phone`, difficulty: 'intermediate' },
+          {
+            id: 'ddl-2',
+            title: 'Add Column',
+            description: 'Using ALTER TABLE on **persons**, add a new column "email" with type VARCHAR(50) NOT NULL',
+            query: `ALTER TABLE persons\nADD email VARCHAR(50) NOT NULL`,
+            difficulty: 'intermediate',
+            setupSql: `CREATE TABLE IF NOT EXISTS persons (id INT NOT NULL, person_name VARCHAR(50) NOT NULL, birth_date DATE, phone VARCHAR(15) NOT NULL, CONSTRAINT pk_persons PRIMARY KEY (id));`
+          },
+          {
+            id: 'ddl-3',
+            title: 'Drop Column',
+            description: 'Using ALTER TABLE on **persons**, remove the "phone" column from the table',
+            query: `ALTER TABLE persons\nDROP COLUMN phone`,
+            difficulty: 'intermediate',
+            setupSql: `CREATE TABLE IF NOT EXISTS persons (id INT NOT NULL, person_name VARCHAR(50) NOT NULL, birth_date DATE, phone VARCHAR(15) NOT NULL, email VARCHAR(50) NOT NULL, CONSTRAINT pk_persons PRIMARY KEY (id));`
+          },
         ]
       },
       {
@@ -143,7 +159,14 @@ export const sqlCurriculum: SQLModule[] = [
         title: 'DROP TABLE',
         description: 'Delete tables from database',
         queries: [
-          { id: 'ddl-4', title: 'Drop Table', description: 'Write a DROP TABLE statement to permanently delete the **persons** table and all its data', query: `DROP TABLE persons`, difficulty: 'intermediate' },
+          {
+            id: 'ddl-4',
+            title: 'Drop Table',
+            description: 'Write a DROP TABLE statement to permanently delete the **persons** table and all its data',
+            query: `DROP TABLE persons`,
+            difficulty: 'intermediate',
+            setupSql: `CREATE TABLE IF NOT EXISTS persons (id INT NOT NULL, person_name VARCHAR(50) NOT NULL, CONSTRAINT pk_persons PRIMARY KEY (id));`
+          },
         ]
       }
     ]

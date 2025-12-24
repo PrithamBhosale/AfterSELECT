@@ -300,17 +300,14 @@ const Explore = () => {
                                                                         ? "bg-green-500 text-white"
                                                                         : "bg-slate-100 text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-600"
                                                                 )}>
-                                                                    {completed ? (
-                                                                        <Check className="w-3.5 h-3.5" />
-                                                                    ) : (
-                                                                        <span>{(queryInfo?.globalIndex ?? 0) + 1}</span>
-                                                                    )}
+                                                                    <span>{(queryInfo?.globalIndex ?? 0) + 1}</span>
                                                                 </div>
 
                                                                 {/* Query Info */}
                                                                 <div className="flex-1 min-w-0">
-                                                                    <div className="font-medium text-sm text-slate-800 truncate group-hover:text-blue-600 transition-colors">
+                                                                    <div className="font-medium text-sm text-slate-800 truncate group-hover:text-blue-600 transition-colors flex items-center gap-2">
                                                                         {query.title}
+                                                                        {completed && <Check className="w-3.5 h-3.5 text-green-600" />}
                                                                     </div>
                                                                     <div
                                                                         className="text-xs text-slate-500 line-clamp-2 mt-0.5"

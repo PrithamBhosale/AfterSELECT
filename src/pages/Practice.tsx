@@ -225,7 +225,7 @@ const Practice = () => {
 
     try {
       // Execute the user's query
-      const userResult = await executeQueryAsync(query);
+      const userResult = await executeQueryAsync(query, currentQuery?.setupSql);
       setResults(userResult.data);
       setResultSets(userResult.resultSets);
 
@@ -246,7 +246,7 @@ const Practice = () => {
 
         if (isSelectQuery && !isDDLorDML && currentQuery.query) {
           // Execute the reference solution to get expected results
-          const expectedResult = await executeQueryAsync(currentQuery.query);
+          const expectedResult = await executeQueryAsync(currentQuery.query, currentQuery.setupSql);
 
           if (!expectedResult.isError && expectedResult.data) {
             // Compare results

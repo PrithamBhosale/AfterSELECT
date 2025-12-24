@@ -195,7 +195,7 @@ function validateQueryForLearners(query: string): { isValid: boolean; error?: st
 }
 
 // Execute a SQL query using real SQLite
-export async function executeQueryAsync(query: string): Promise<QueryResult> {
+export async function executeQueryAsync(query: string, setupSql?: string): Promise<QueryResult> {
   try {
     await ensureInitialized();
 
@@ -206,6 +206,16 @@ export async function executeQueryAsync(query: string): Promise<QueryResult> {
         message: 'Database not initialized. Please try again.',
         isError: true,
       };
+    }
+
+    // Run setup SQL if provided (e.g. to create tables for the challenge)
+    if (setupSql) {
+      try {
+        db.exec(setupSql);
+      } catch (setupError) {
+        console.warn('Setup SQL execution failed:', setupError);
+        // Continue anyway - the user's query might still work or will report the missing table
+      }
     }
 
     const trimmedQuery = query.trim();
