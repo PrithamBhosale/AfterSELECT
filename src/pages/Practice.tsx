@@ -361,8 +361,10 @@ const Practice = () => {
       setResultSets(null);
       setMessage(null);
       setIsError(false);
+      // Update URL to match current query
+      navigate(`/practice?q=${index}`, { replace: true });
     }
-  }, [allQueries.length]);
+  }, [allQueries.length, navigate]);
 
   const goNext = useCallback(() => goToQuery(currentIndex + 1), [currentIndex, goToQuery]);
   const goPrev = useCallback(() => goToQuery(currentIndex - 1), [currentIndex, goToQuery]);

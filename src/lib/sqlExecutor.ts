@@ -65,6 +65,17 @@ async function initDatabase(): Promise<void> {
     )
   `);
 
+  // Persons table for DDL/DML practice
+  db.run(`
+    CREATE TABLE persons (
+      id INTEGER PRIMARY KEY,
+      person_name TEXT,
+      birth_date TEXT,
+      phone TEXT,
+      email TEXT
+    )
+  `);
+
   // Insert sample data - customers
   db.run(`INSERT INTO customers VALUES (1, 'John', 'USA', 500)`);
   db.run(`INSERT INTO customers VALUES (2, 'Maria', 'Germany', 750)`);
@@ -338,7 +349,7 @@ export async function executeQueryAsync(query: string, setupSql?: string): Promi
     if (errorMessage.includes('no such table')) {
       const match = errorMessage.match(/no such table: (\w+)/);
       friendlyMessage = match
-        ? `Error: Table '${match[1]}' does not exist. Available tables: customers, orders, products, employees`
+        ? `Error: Table '${match[1]}' does not exist. Available tables: customers, orders, products, employees, persons`
         : errorMessage;
     } else if (errorMessage.includes('no such column')) {
       const match = errorMessage.match(/no such column: (\w+)/);

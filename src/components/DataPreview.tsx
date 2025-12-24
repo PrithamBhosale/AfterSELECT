@@ -12,6 +12,12 @@ const tableIcons: Record<TableName, string> = {
   orders: '📦',
   products: '🛍️',
   employees: '👥',
+  persons: '👤',
+};
+
+// Schema definitions for empty tables
+const tableSchemas: Partial<Record<TableName, string[]>> = {
+  persons: ['id', 'person_name', 'birth_date', 'phone', 'email'],
 };
 
 const DataPreview = ({ defaultExpanded = true, highlightedTables = [] }: DataPreviewProps) => {
@@ -37,7 +43,8 @@ const DataPreview = ({ defaultExpanded = true, highlightedTables = [] }: DataPre
 
   const renderTable = (tableName: TableName) => {
     const data = sampleTables[tableName];
-    if (!data || data.length === 0) return null;
+    const columns = data.length > 0 ? Object.keys(data[0]) : tableSchemas[tableName] || [];
+    if (columns.length === 0) return null;
     const isOpen = expandedTables.has(tableName);
     const highlighted = isHighlighted(tableName);
 
@@ -95,7 +102,7 @@ const DataPreview = ({ defaultExpanded = true, highlightedTables = [] }: DataPre
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-t border-slate-200 bg-slate-50">
-                  {Object.keys(data[0]).map((col) => (
+                  {columns.map((col) => (
                     <th
                       key={col}
                       className="px-3 py-2 text-left font-mono font-semibold text-slate-600 whitespace-nowrap border-r border-slate-100 last:border-r-0"
@@ -106,29 +113,40 @@ const DataPreview = ({ defaultExpanded = true, highlightedTables = [] }: DataPre
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {data.map((row, i) => (
-                  <tr
-                    key={i}
-                    className={cn(
-                      "hover:bg-slate-50 transition-colors",
-                      i % 2 === 0 ? "bg-white" : "bg-slate-25"
-                    )}
-                  >
-                    {Object.values(row).map((val, j) => (
-                      <td
-                        key={j}
-                        className="px-3 py-1.5 font-mono text-slate-700 whitespace-nowrap border-r border-slate-50 last:border-r-0"
-                      >
-                        {val === null
-                          ? <span className="text-slate-400 italic">NULL</span>
-                          : typeof val === 'number'
-                            ? <span className="text-blue-600">{String(val)}</span>
-                            : String(val)
-                        }
-                      </td>
-                    ))}
+                {data.length > 0 ? (
+                  data.map((row, i) => (
+                    <tr
+                      key={i}
+                      className={cn(
+                        "hover:bg-slate-50 transition-colors",
+                        i % 2 === 0 ? "bg-white" : "bg-slate-25"
+                      )}
+                    >
+                      {Object.values(row).map((val, j) => (
+                        <td
+                          key={j}
+                          className="px-3 py-1.5 font-mono text-slate-700 whitespace-nowrap border-r border-slate-50 last:border-r-0"
+                        >
+                          {val === null
+                            ? <span className="text-slate-400 italic">NULL</span>
+                            : typeof val === 'number'
+                              ? <span className="text-blue-600">{String(val)}</span>
+                              : String(val)
+                          }
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="px-3 py-4 text-center text-slate-400 italic"
+                    >
+                      Empty table - use INSERT to add data
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>

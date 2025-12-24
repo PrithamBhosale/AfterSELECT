@@ -28,6 +28,11 @@ export const sampleTables = {
     { employee_id: 4, first_name: 'David', last_name: 'Brown', department: 'Sales', salary: 72000 },
     { employee_id: 5, first_name: 'Emma', last_name: 'Davis', department: 'Engineering', salary: 92000 },
   ],
+  persons: [
+    // Empty by default - used for DDL/DML practice
+    // Columns: id, person_name, birth_date, phone, email
+  ],
 };
 
 export type TableName = keyof typeof sampleTables;
+
